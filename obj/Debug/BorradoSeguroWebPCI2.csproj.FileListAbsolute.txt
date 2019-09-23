@@ -1,0 +1,7 @@
+C:\Users\des02w7\source\repos\BorradoSeguroWebPCI2\obj\Debug\BorradoSeguroWebPCI2.csproj.CoreCompileInputs.cache
+C:\Users\des02w7\source\repos\BorradoSeguroWebPCI2\bin\Debug\BorradoSeguroWebPCI.exe.config
+C:\Users\des02w7\source\repos\BorradoSeguroWebPCI2\bin\Debug\BorradoSeguroWebPCI.exe
+C:\Users\des02w7\source\repos\BorradoSeguroWebPCI2\bin\Debug\BorradoSeguroWebPCI.pdb
+C:\Users\des02w7\source\repos\BorradoSeguroWebPCI2\obj\Debug\BorradoSeguroWebPCI2.csprojAssemblyReference.cache
+C:\Users\des02w7\source\repos\BorradoSeguroWebPCI2\obj\Debug\BorradoSeguroWebPCI.exe
+C:\Users\des02w7\source\repos\BorradoSeguroWebPCI2\obj\Debug\BorradoSeguroWebPCI.pdb
