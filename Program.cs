@@ -13,16 +13,26 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
     {        
         static readonly String ERASER_ARGUMENTS = "erase /method=b1bfab4a-31d3-43a5-914c-e9892c78afd8 /target file=";
         static readonly DateTime TODAY = DateTime.Now;
-        static String WORKSPACE = @"C:\TEST 3\";
+        static String WORKSPACE = @"C:\TEST 3\";        
+        //static readonly String LOG_FILE = @"log.txt";
         static String ERASER_PATH = @"C:\Program Files\Eraser\Eraser.exe";
         static int RETENTION = 15;
+        static string PARAMETERS_FILE;
 
         static void Main(string[] args)
         {
             try
-            {
+            {                
+                if (args.Length == 0)
+                {
+                    System.Console.WriteLine("Ingrese la ruta del archivo de parámetros");
+                }
 
+                PARAMETERS_FILE = args[0];
+
+                Log("Leyendo parámetros", EventLogEntryType.Information);
                 readParameters();
+                Log("Parámetros leídos", EventLogEntryType.Information);
 
                 if (!EraserExists())
                 {
@@ -31,17 +41,22 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
                     throw new System.ApplicationException(msg);
                 }
 
+                int cont = 0;
+
                 foreach (String path in GetPathsInWorkSpace())
                 {
                     if (IsEligibleForErasure(path))
                     {
                         CallEraserOnFile(path);
+                        cont++;
                     }
                 }
+
+                Log("Archivos eliminados: " + cont + ". Programa terminado", EventLogEntryType.Information);
             }
             catch (Exception e)
             {
-                Log(e.Message, EventLogEntryType.Error);
+                Log(e.Message, EventLogEntryType.Error);                
                 throw e;
             }
 
@@ -52,7 +67,7 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
         {
             try
             {
-                FileStream fileStream = new FileStream("parameters.txt", FileMode.Open);
+                FileStream fileStream = new FileStream(PARAMETERS_FILE, FileMode.Open);
 
                 using (StreamReader reader = new StreamReader(fileStream))
                 {
@@ -65,7 +80,7 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
                         if (tokens.Length != 2)
                         {
                             String msg = "Formato no válido. Los parámetros deben ser especificados en la forma: [NOMBRE] = [VALOR]";
-                            Log(msg, EventLogEntryType.Error);
+                            Log(msg, EventLogEntryType.Error);                            
                             throw new System.ApplicationException(msg);
                         }
 
@@ -82,7 +97,7 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
                                 break;
                             default:
                                 String msg = "Parámetro no válido. Valores aceptados: ERASER_HOME, PATHS, RETENTION";
-                                Log(msg, EventLogEntryType.Error);
+                                Log(msg, EventLogEntryType.Error);                                
                                 throw new System.ApplicationException(msg);
                         }
 
@@ -92,13 +107,13 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
             catch(FileNotFoundException e)
             {
                 String msg = "El archivo de parámetros 'parameters.txt' no existe. Debe crear este archivo en la ruta donde se encuentra el ejecutable del aplicativo.";
-                Log(msg, EventLogEntryType.Error);
+                Log(msg, EventLogEntryType.Error);                
                 throw new System.ApplicationException(msg);
             }
             catch(FormatException e2)
             {
                 String msg = "Formato no válido. Los parámetros deben ser especificados en la forma: [NOMBRE] = [VALOR]";
-                Log(msg, EventLogEntryType.Error);
+                Log(msg, EventLogEntryType.Error);                
                 throw new System.ApplicationException(msg);
             }            
         }
@@ -111,7 +126,7 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
             {
                 String msg = "Se esperaba disco de red montado en unidad F:\\ Por favor revise que el disco esté " +
                              "conectado en la unidad indicada. Si el problema persiste contacte al Administrador.";
-                Log(msg, EventLogEntryType.Error);
+                Log(msg, EventLogEntryType.Error);                
                 throw new System.ApplicationException(msg);
             }
 
@@ -119,7 +134,7 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
             {
                 String msg = "Se esperaba directorio de descargas. Cree un directorio de descargas correspondiente a " + WORKSPACE +
                              ". Si el problema persiste contacte al Administrador.";
-                Log(msg, EventLogEntryType.Error);
+                Log(msg, EventLogEntryType.Error);                
                 throw new System.ApplicationException(msg);
 
             }
@@ -163,9 +178,12 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
                 {
                     Thread.Sleep(2000);
                 }
-                process.Kill();
+                if (!process.HasExited)
+                {
+                    process.Kill();
+                }                
                 string output = "Archivo " + path + " borrado exitosamente."; //The output result                
-                Log(output, EventLogEntryType.Information);
+                Log(output, EventLogEntryType.Information);                
             }
             catch (Exception e)
             {
@@ -178,9 +196,10 @@ namespace cl.trends.pci.WEBPCI.BorradoSeguroWebPCI
         {
             using (EventLog eventLog = new EventLog("Application"))
             {
-                eventLog.Source = "cl.trends.pci.WEBPCI.BorradoSeguroWebPCI";
+                eventLog.Source = "Trends Tecnología";
                 eventLog.WriteEntry(message, level, 9999, 19 /*Archive Task*/);
             }
         }
+
     }
 }
